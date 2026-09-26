@@ -3,19 +3,13 @@ import { StatusCodes } from "http-status-codes";
 import UserModel from "../models/user.model.js";
 import hashedPassword from "../utils/hashed.password.js";
 
-interface ICreateUser {
-    name: string;
-    email: string;
-    password: string;
-}
-
 class UserController {
     createUser = async(
         req: Request,
         res: Response
     ) => {
         try {
-            const { name, email, password }: ICreateUser = req.body;
+            const { name, email, password } = req.body;
 
             const userExists = await UserModel.findOne({
                 where: { email }
