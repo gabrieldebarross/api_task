@@ -39,8 +39,7 @@ class UserController {
         } catch(error) {
             console.log("Erro ao criar o usuário", error);
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-                message: "Erro interno no servidor, tente novamente mais tarde.",
-                error: error
+                message: "Erro interno no servidor, tente novamente mais tarde."
             })
         }
     }
