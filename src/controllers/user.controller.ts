@@ -4,7 +4,7 @@ import userService from "../services/user.service.js";
 import AppError from "../errors/app.error.js";
 
 class UserController {
-    createUser = async(
+    createUser = async (
         req: Request,
         res: Response
     ) => {
@@ -21,14 +21,39 @@ class UserController {
                 message: "Usuário criado com sucesso",
                 user
             });
-        } catch(error) {
+        } catch (error) {
+            if (error instanceof AppError) {
+                return res.status(error.statusCode).json({
+                    message: error.message
+                });
+            }
+
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+                message: "Erro interno no servidor, tente novamente mais tarde."
+            })
+        }
+    }
+
+    getUserById = async (
+        req: Request,
+        res: Response
+    ) => {
+        try {
+            const id = Number(req.params.id);
+
+            const user = await userService.getUserById(id);
+
+            return res.status(StatusCodes.OK).json({
+                message: "Usuário encontrado com sucesso",
+                user: user
+            })
+        } catch (error) {
             if(error instanceof AppError){
                 return res.status(error.statusCode).json({
                     message: error.message
                 });
             }
 
-            console.log("Erro ao criar o usuário", error);
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                 message: "Erro interno no servidor, tente novamente mais tarde."
             })

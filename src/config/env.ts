@@ -11,5 +11,5 @@ export const env = {
         password: process.env.DB_PASSWORD
     },
 
-    jwtSecret: process.env.JWT_SECRET
+    jwtSecret: process.env.JWT_SECRET || ""
 }
