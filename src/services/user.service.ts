@@ -93,7 +93,11 @@ class UserService {
             );
         }
 
-        const user = await UserModel.findByPk(id);
+        const user = await UserModel.findByPk(id, {
+            attributes: {
+                exclude: ["password"]
+            }
+        });
 
         if (!user) {
             throw new AppError(
@@ -102,9 +106,7 @@ class UserService {
             );
         }
 
-        const { password: _, ...userWithoutPassword } = user.toJSON();
-
-        return userWithoutPassword;
+        return user;
     }
 
     findUsers  = async ({name, email}:IFindUsersFilters ) => {
