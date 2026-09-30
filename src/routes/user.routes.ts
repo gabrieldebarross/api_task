@@ -7,6 +7,7 @@ import checkAuth from "../middleware/check.auth.js";
 const userRoutes: Router = Router();
 
 userRoutes.post("/", validate(createUserSchema), userController.createUser);
+userRoutes.post("/login", userController.loginUser);
 userRoutes.get("/", checkAuth, userController.findUsers);
 userRoutes.get("/:id", checkAuth, userController.getUserById);
 

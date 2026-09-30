@@ -2,6 +2,9 @@ import type { WhereOptions } from "sequelize";
 import AppError from "../errors/app.error.js";
 import UserModel from "../models/user.model.js";
 import hashedPassword from "../utils/hashed.password.js";
+import bcrypt from "bcrypt";
+import comparePassword from "../utils/compare.password.js";
+import generateToken from "../utils/generateToken.js";
 
 interface ICreateUser {
     name: string;
@@ -18,6 +21,11 @@ interface IUserAttributes {
     id: number,
     name: string,
     email: string
+}
+
+interface ILoginUser {
+    email: string,
+    password: string
 }
 
 class UserService {
@@ -44,6 +52,38 @@ class UserService {
         const { password: _, ...userWithoutPassword } = user.toJSON();
 
         return userWithoutPassword;
+    }
+
+    loginUser = async({email, password}: ILoginUser) => {
+        const userExists = await UserModel.findOne({
+            where: { email }
+        });
+
+         if(!userExists){
+            throw new AppError(
+                "Verifique as informações fornecidas e tente novamente.",
+                401
+            )
+        }
+
+        const verifyPassword = await comparePassword(password, userExists.password);
+        
+        if(!verifyPassword){
+            throw new AppError(
+                "Verifque as informações fornecidas e tente novamente.",
+                401
+            )
+        }
+
+        const payload = {
+            id: userExists.id,
+            name: userExists.name,
+            email: userExists.email
+        }
+
+        const token = generateToken(payload);
+
+        return token;
     }
 
     getUserById = async (id: number) => {
