@@ -2,7 +2,6 @@ import type { WhereOptions } from "sequelize";
 import AppError from "../errors/app.error.js";
 import UserModel from "../models/user.model.js";
 import hashedPassword from "../utils/hashed.password.js";
-import bcrypt from "bcrypt";
 import comparePassword from "../utils/compare.password.js";
 import generateToken from "../utils/generateToken.js";
 
@@ -120,7 +119,10 @@ class UserService {
             }
     
             const users = await UserModel.findAll({
-                where
+                where,
+                attributes: {
+                    exclude: ["password"]
+                }
             });
 
             return users;
