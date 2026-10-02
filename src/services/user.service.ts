@@ -4,6 +4,7 @@ import UserModel from "../models/user.model.js";
 import hashedPassword from "../utils/hashed.password.js";
 import comparePassword from "../utils/compare.password.js";
 import generateToken from "../utils/generateToken.js";
+import userRepository from "../repositories/user.repository.js";
 
 interface ICreateUser {
     name: string;
@@ -29,9 +30,7 @@ interface ILoginUser {
 
 class UserService {
     createUser = async ({ name, email, password }: ICreateUser) => {
-        const userExist = await UserModel.findOne({
-            where: { email }
-        });
+        const userExist = await userRepository.findByEmail(email);
 
         if (userExist) {
             throw new AppError(
@@ -42,11 +41,13 @@ class UserService {
 
         const passwordHashed = await hashedPassword(password);
 
-        const user = await UserModel.create({
+        const data = {
             name,
             email,
             password: passwordHashed
-        });
+        }
+
+        const user = await userRepository.create(data)
 
         const { password: _, ...userWithoutPassword } = user.toJSON();
 
@@ -54,9 +55,7 @@ class UserService {
     }
 
     loginUser = async({email, password}: ILoginUser) => {
-        const userExists = await UserModel.findOne({
-            where: { email }
-        });
+        const userExists = await userRepository.findByEmail(email);
 
          if(!userExists){
             throw new AppError(
@@ -93,11 +92,7 @@ class UserService {
             );
         }
 
-        const user = await UserModel.findByPk(id, {
-            attributes: {
-                exclude: ["password"]
-            }
-        });
+        const user = await userRepository.findById(id);
 
         if (!user) {
             throw new AppError(
@@ -120,12 +115,7 @@ class UserService {
                 where.email = email;
             }
     
-            const users = await UserModel.findAll({
-                where,
-                attributes: {
-                    exclude: ["password"]
-                }
-            });
+            const users = await userRepository.findAll(where);
 
             return users;
         } catch(error){
