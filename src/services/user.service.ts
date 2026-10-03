@@ -1,6 +1,5 @@
 import type { WhereOptions } from "sequelize";
 import AppError from "../errors/app.error.js";
-import UserModel from "../models/user.model.js";
 import hashedPassword from "../utils/hashed.password.js";
 import comparePassword from "../utils/compare.password.js";
 import generateToken from "../utils/generateToken.js";
@@ -124,6 +123,25 @@ class UserService {
                 500
             );
         }
+    }
+
+    deactivateUser = async(id: number) => {
+        if (!Number.isInteger(id) || id <= 0) {
+            throw new AppError(
+                "Não foi possível encontrar o usuário. Verifique o ID informado.",
+                400
+            );
+        }
+
+        const affectedCount = await userRepository.softDelete(id);
+        if(affectedCount === 0){
+            throw new AppError(
+                "Não foi possível realizar a operação, usuário inexistente ou já desativado",
+                404
+            )
+        }
+
+        return affectedCount;
     }
 }
 

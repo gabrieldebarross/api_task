@@ -126,6 +126,28 @@ class UserController {
             }
         }
     }
+
+    softDeleteUser = async(
+        req: Request,
+        res: Response
+    ) => {
+        try {
+            const userId = req.user?.id;
+
+            await userService.deactivateUser(userId);
+
+            return res.status(StatusCodes.NO_CONTENT).send();
+        } catch(error){
+            if(error instanceof AppError){
+                return res.status(error.statusCode).json({
+                    message: error.message
+                });
+            };
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+                message: "Erro interno no servidor, tente novamente mais tarde."
+            });
+        }
+    }
 }
 
 export default new UserController();

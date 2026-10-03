@@ -31,6 +31,21 @@ class UserRepository {
             }
         })
     }
+
+    softDelete = async (id: number) => {
+        const [affectedCount] = await UserModel.update(
+            {
+                isActive: false
+            },
+            {
+                where: {
+                    id: id,
+                    isActive: true
+                }
+            }
+        );
+        return affectedCount;
+    }
 }
 
 export default new UserRepository;
