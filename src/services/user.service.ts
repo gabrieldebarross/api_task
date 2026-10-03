@@ -63,7 +63,12 @@ class UserService {
             )
         }
 
-        
+        if(!userExists.isActive){
+            throw new AppError(
+                "Sua conta não foi encontrada ou se encontra desativada.",
+                403
+            )
+        }
 
         const verifyPassword = await comparePassword(password, userExists.password);
         
