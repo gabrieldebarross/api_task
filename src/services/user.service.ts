@@ -63,6 +63,8 @@ class UserService {
             )
         }
 
+        
+
         const verifyPassword = await comparePassword(password, userExists.password);
         
         if(!verifyPassword){

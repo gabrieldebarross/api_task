@@ -46,6 +46,20 @@ class UserRepository {
         );
         return affectedCount;
     }
+
+    isUserActive = async (id: number) => {
+        const user = await UserModel.findOne(
+            {
+                where: {
+                    id: id,
+                    isActive: true
+                },
+                attributes: ["id"]
+            }
+        );
+
+        return !!user; // Converte para boolean e inverte, depois inverte novamente 
+    }
 }
 
 export default new UserRepository;
